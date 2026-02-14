@@ -617,8 +617,14 @@
       });
 
       if (!response.ok) {
-        const msg = await response.text();
-        throw new Error(msg || 'API request failed');
+        let reason = '';
+        try {
+          const errJson = await response.json();
+          reason = errJson?.error || JSON.stringify(errJson);
+        } catch (_) {
+          reason = await response.text();
+        }
+        throw new Error(reason || 'API request failed');
       }
 
       const data = await response.json();
@@ -653,9 +659,10 @@
           smoothFocusPanel(deepThreePanelEl);
         } catch (error) {
           if (requestId !== readingRequestId || !deepThreePanelEl.classList.contains('open')) return;
+          const errMsg = error instanceof Error ? error.message : String(error);
           deepThreeTextEl.textContent =
             buildThreeCardDeepReading(pendingCards) +
-            '\n\n（目前 ChatGPT 連線失敗，已改用本地深度解讀。）';
+            `\n\n（目前 ChatGPT 連線失敗，已改用本地深度解讀。錯誤：${errMsg}）`;
         }
         return;
       }

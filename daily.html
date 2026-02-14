@@ -384,6 +384,44 @@
       font-size: 0.97rem;
     }
 
+    .loading-block {
+      display: none;
+      margin: 2px 0 6px;
+    }
+
+    .loading-label {
+      margin: 0;
+      font-size: 0.92rem;
+      color: rgba(245, 239, 226, 0.86);
+      letter-spacing: 0.03em;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hourglass {
+      display: inline-block;
+      font-size: 1rem;
+      color: var(--gold);
+      transform-origin: 50% 55%;
+      animation: hourglass-flip 1.25s ease-in-out infinite;
+      filter: drop-shadow(0 0 4px rgba(248, 215, 130, 0.35));
+    }
+
+    @keyframes hourglass-flip {
+      0%, 45% { transform: rotate(0deg); }
+      50%, 95% { transform: rotate(180deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .deep-panel.is-loading .loading-block {
+      display: block;
+    }
+
+    .deep-panel.is-loading .deep-text {
+      display: none;
+    }
+
     @media (max-width: 820px) {
       .content {
         grid-template-columns: 1fr;
@@ -450,6 +488,9 @@
       </button>
       <article class="deep-panel" id="deepDailyPanel">
         <h3 class="deep-title">今日牌深度解讀</h3>
+        <div class="loading-block" id="deepDailyLoading">
+          <p class="loading-label" id="deepDailyLoadingLabel">正在讀取祕密脈絡 <span class="hourglass" aria-hidden="true">⌛</span></p>
+        </div>
         <p class="deep-text" id="deepDailyText">翻開牌後，你可以在這裡查看更完整的解讀。</p>
       </article>
     </section>
@@ -470,9 +511,11 @@
     const deepDailyBtnEl = document.getElementById('deepDailyBtn');
     const deepDailyPanelEl = document.getElementById('deepDailyPanel');
     const deepDailyTextEl = document.getElementById('deepDailyText');
+    const deepDailyLoadingLabelEl = document.getElementById('deepDailyLoadingLabel');
     let pendingCard = null;
     let hasFlipped = false;
     let dailyReadingRequestId = 0;
+    let dailyProgressController = null;
     cardBackImgEl.src = window.TAROT.cardBackImage;
 
     function buildDailyDeepReading(card) {
@@ -561,6 +604,16 @@
       });
     }
 
+    function startLoadingProgress(labelEl) {
+      labelEl.innerHTML = '正在讀取祕密脈絡 <span class="hourglass" aria-hidden="true">⌛</span>';
+      return {
+        finish() {
+          labelEl.textContent = '解讀完成';
+        },
+        stop() {}
+      };
+    }
+
     async function fetchDailyReading(card) {
       const response = await fetch('/api/daily-reading', {
         method: 'POST',
@@ -598,25 +651,32 @@
       const willOpen = !deepDailyPanelEl.classList.contains('open');
       if (willOpen) {
         deepDailyPanelEl.classList.add('open');
+        deepDailyPanelEl.classList.add('is-loading');
         deepDailyBtnEl.classList.add('open');
-        deepDailyTextEl.textContent = '正在連線 Gemini 生成深度解讀...';
+        if (dailyProgressController) dailyProgressController.stop();
+        dailyProgressController = startLoadingProgress(deepDailyLoadingLabelEl);
         smoothFocusPanel(deepDailyPanelEl);
         const requestId = ++dailyReadingRequestId;
         try {
           const gptText = await fetchDailyReading(pendingCard);
           if (requestId !== dailyReadingRequestId || !deepDailyPanelEl.classList.contains('open')) return;
+          dailyProgressController?.finish();
+          await new Promise((resolve) => setTimeout(resolve, 120));
+          deepDailyPanelEl.classList.remove('is-loading');
           deepDailyTextEl.textContent = gptText;
           smoothFocusPanel(deepDailyPanelEl);
         } catch (error) {
           if (requestId !== dailyReadingRequestId || !deepDailyPanelEl.classList.contains('open')) return;
-          const errMsg = error instanceof Error ? error.message : String(error);
-          deepDailyTextEl.textContent =
-            buildDailyDeepReading(pendingCard) +
-            `\n\n（目前 Gemini 連線失敗，已改用本地深度解讀。錯誤：${errMsg}）`;
+          dailyProgressController?.finish();
+          await new Promise((resolve) => setTimeout(resolve, 120));
+          deepDailyPanelEl.classList.remove('is-loading');
+          deepDailyTextEl.textContent = buildDailyDeepReading(pendingCard);
         }
         return;
       }
+      dailyProgressController?.stop();
       deepDailyPanelEl.classList.remove('open');
+      deepDailyPanelEl.classList.remove('is-loading');
       deepDailyBtnEl.classList.remove('open');
     });
 

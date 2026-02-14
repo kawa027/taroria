@@ -4,8 +4,15 @@ export async function onRequestPost(context) {
     if (!apiKey) {
       return json({ error: 'Missing GEMINI_API_KEY' }, 500);
     }
-    const preferredModel = context.env.GEMINI_MODEL || 'gemini-2.0-flash';
-    const candidateModels = [preferredModel, 'gemini-2.0-flash', 'gemini-1.5-flash-latest'];
+    const preferredModel = stripModelPrefix(context.env.GEMINI_MODEL || 'gemini-2.0-flash');
+    const discoveredModels = await listGenerateModels(apiKey);
+    const candidateModels = dedupe([
+      preferredModel,
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
+      'gemini-1.5-pro',
+      ...discoveredModels
+    ]);
 
     const payload = await context.request.json();
     const past = payload?.past || {};
@@ -30,7 +37,7 @@ export async function onRequestPost(context) {
     let lastError = '';
     let text = '';
     for (const model of candidateModels) {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${stripModelPrefix(model)}:generateContent?key=${encodeURIComponent(apiKey)}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -77,4 +84,23 @@ function json(payload, status = 200) {
       'Cache-Control': 'no-store'
     }
   });
+}
+
+async function listGenerateModels(apiKey) {
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`);
+  if (!response.ok) return [];
+  const data = await response.json();
+  const models = data?.models || [];
+  return models
+    .filter((m) => Array.isArray(m?.supportedGenerationMethods) && m.supportedGenerationMethods.includes('generateContent'))
+    .map((m) => stripModelPrefix(String(m?.name || '')))
+    .filter(Boolean);
+}
+
+function stripModelPrefix(name) {
+  return String(name).replace(/^models\//, '');
+}
+
+function dedupe(list) {
+  return [...new Set(list.filter(Boolean))];
 }

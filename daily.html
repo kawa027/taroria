@@ -472,25 +472,51 @@
     const deepDailyTextEl = document.getElementById('deepDailyText');
     let pendingCard = null;
     let hasFlipped = false;
+    let dailyReadingRequestId = 0;
     cardBackImgEl.src = window.TAROT.cardBackImage;
 
     function buildDailyDeepReading(card) {
+      const isMajor = card.arcana === '大阿爾卡那';
+      const suitToneMap = {
+        '聖杯': '情感與關係',
+        '星幣': '現實與資源',
+        '寶劍': '思維與決斷',
+        '權杖': '行動與推進'
+      };
+      const suitTone = suitToneMap[card.suit] || '核心課題';
       const directionTone = card.reversed
-        ? '我會更建議你先慢一點，把節奏調順，再往前推。'
-        : '這張牌的能量比較順，你可以主動一點去推進想做的事。';
+        ? '今天比較適合先修正、先收斂，不急著擴張。'
+        : '今天適合順勢推進，主動做出一個明確動作。';
+      const baseHint = String(card.meaning).replace(/^正位提示：|^逆位提示：/, '');
+
+      const emotionalLine = card.reversed
+        ? `「${card.name}」逆位在情感上提醒你：先處理內在不安，再談關係裡的對錯。`
+        : `「${card.name}」正位在情感上給你的訊號是：真誠表達會帶來關係修復與靠近。`;
+
+      const workLine = isMajor
+        ? `工作面上，這張大阿爾卡那更像“主題牌”，表示你今天的關鍵任務是：圍繞「${card.name}」的能量完成一個核心決策。`
+        : `工作面上，你抽到的是「${card.suit}」系統，主軸在${suitTone}。今天請優先處理「${card.focus}」這件事。`;
+
+      const moneyLine = card.suit === '星幣'
+        ? (card.reversed
+            ? '金錢面要先補漏洞：暫緩高風險投入，先把既有開支與現金流校正。'
+            : '金錢面偏穩定：適合做務實規劃、分配預算，並推進可落地的財務安排。')
+        : (card.reversed
+            ? '金錢面建議保守：先觀察、先盤點，再做額外承諾。'
+            : '金錢面可小步前進：以穩定增量為主，不必一次壓重注。');
+
+      const luckLine = card.reversed
+        ? '整體運勢屬於「可調整型」，你越願意放慢一步，後面的路越清楚。'
+        : '整體運勢屬於「可放大型」，你越果斷聚焦，正向回饋越快出現。';
 
       return `你今天抽到的是「${card.name}（${card.englishName}）」${card.direction}。\n` +
-        `先給你一句總提醒：${card.meaning}。${directionTone}\n\n` +
-        `情感：\n` +
-        `如果你在關係裡有點不安，這張牌在說“先把真實感受說清楚”。別急著爭對錯，先讓對方知道你在意什麼，氣氛會緩和很多。\n\n` +
-        `工作：\n` +
-        `今天適合做“一個關鍵推進點”，不要鋪太開。你把最重要的一件事做出結果，整體效率就會明顯上來。\n\n` +
-        `金錢：\n` +
-        `財務上建議走穩健路線。先看清支出結構，再決定要不要新增投入；衝動消費和臨時性大開銷，今天盡量壓一下。\n\n` +
-        `運勢：\n` +
-        `整體運勢屬於“可控可調”的類型。你越清楚自己當下的優先級，運勢就越容易站到你這邊。\n\n` +
-        `你可以把今天的行動收斂成一句話：` +
-        `“我先把最重要的一步走穩，再處理其他事情。”`;
+        `核心提示：${baseHint}。${directionTone}\n\n` +
+        `情感：\n${emotionalLine}\n\n` +
+        `工作：\n${workLine}\n\n` +
+        `金錢：\n${moneyLine}\n\n` +
+        `運勢：\n${luckLine}\n\n` +
+        `一句今日行動：\n` +
+        `「以${card.name}為主軸，先把最關鍵的一步走穩。」`;
     }
 
     function dealDailyCard() {
@@ -535,14 +561,52 @@
       });
     }
 
-    deepDailyBtnEl.addEventListener('click', () => {
+    async function fetchDailyReading(card) {
+      const response = await fetch('/api/daily-reading', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          card: {
+            name: card?.name,
+            englishName: card?.englishName,
+            direction: card?.direction,
+            meaning: card?.meaning
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const msg = await response.text();
+        throw new Error(msg || 'API request failed');
+      }
+
+      const data = await response.json();
+      if (!data?.text) {
+        throw new Error('API returned empty text');
+      }
+      return data.text;
+    }
+
+    deepDailyBtnEl.addEventListener('click', async () => {
       if (!pendingCard || !hasFlipped) return;
       const willOpen = !deepDailyPanelEl.classList.contains('open');
       if (willOpen) {
-        deepDailyTextEl.textContent = buildDailyDeepReading(pendingCard);
         deepDailyPanelEl.classList.add('open');
         deepDailyBtnEl.classList.add('open');
+        deepDailyTextEl.textContent = '正在連線 ChatGPT 生成深度解讀...';
         smoothFocusPanel(deepDailyPanelEl);
+        const requestId = ++dailyReadingRequestId;
+        try {
+          const gptText = await fetchDailyReading(pendingCard);
+          if (requestId !== dailyReadingRequestId || !deepDailyPanelEl.classList.contains('open')) return;
+          deepDailyTextEl.textContent = gptText;
+          smoothFocusPanel(deepDailyPanelEl);
+        } catch (error) {
+          if (requestId !== dailyReadingRequestId || !deepDailyPanelEl.classList.contains('open')) return;
+          deepDailyTextEl.textContent =
+            buildDailyDeepReading(pendingCard) +
+            '\n\n（目前 ChatGPT 連線失敗，已改用本地深度解讀。）';
+        }
         return;
       }
       deepDailyPanelEl.classList.remove('open');

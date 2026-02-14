@@ -485,6 +485,7 @@
     const deepThreeTextEl = document.getElementById('deepThreeText');
     const pendingCards = {};
     const flippedSlots = { past: false, present: false, future: false };
+    let readingRequestId = 0;
 
     function allSlotsFlipped() {
       return slotIds.every((slot) => flippedSlots[slot]);
@@ -494,30 +495,59 @@
       const p = cards.past;
       const n = cards.present;
       const f = cards.future;
-      const futureTone = f.reversed
-        ? '我會建議你接下來先修正節奏，再談擴張。'
-        : '這代表你後面的推進空間不錯，可以更主動一點。';
+      const cardsList = [p, n, f];
+      const reversedCount = cardsList.filter((c) => c.reversed).length;
+      const suitCount = cardsList.reduce((acc, c) => {
+        const k = c.suit || 'major';
+        acc[k] = (acc[k] || 0) + 1;
+        return acc;
+      }, {});
+      const dominantKey = Object.keys(suitCount).sort((a, b) => suitCount[b] - suitCount[a])[0];
+      const dominantLabelMap = {
+        major: '大阿爾卡那主題',
+        '聖杯': '情感與關係',
+        '星幣': '現實與資源',
+        '寶劍': '思維與決斷',
+        '權杖': '行動與推進'
+      };
+      const dominantLabel = dominantLabelMap[dominantKey] || '整體課題';
+      const trendLine = f.reversed
+        ? `未來位「${f.name}」逆位，表示短期會先修正路線，再進入穩定推進。`
+        : `未來位「${f.name}」正位，表示後續的推進窗口正在打開。`;
+      const pressureLine = reversedCount >= 2
+        ? '三張中逆位偏多，代表目前不是硬推時機，先校準節奏更關鍵。'
+        : reversedCount === 0
+          ? '三張皆正位，代表外在支持度高，適合果斷執行。'
+          : '正逆位混合，代表邊推進邊修正會是最有效策略。';
+
+      const emotionalLine = p.suit === '聖杯' || n.suit === '聖杯' || f.suit === '聖杯'
+        ? '情感面重點在「說出需求」：先把感受講清楚，關係才會往你要的方向移動。'
+        : `情感面更像是「內在整理」：尤其現在位「${n.name}」，提醒你先辨識自己的底線與期待。`;
+
+      const workLine = `工作面請以現在位「${n.name}」為核心：` +
+        `${n.reversed ? '先排除干擾、聚焦一件要緊事。' : '把關鍵任務直接推進到可見成果。'}`;
+
+      const moneyLine = dominantKey === '星幣'
+        ? '金錢面由星幣能量主導，適合做務實規劃：預算、成本、回報節奏要先排好。'
+        : `金錢面受「${dominantLabel}」影響較大，建議先穩再進，避免情緒型決策。`;
+
+      const luckLine = reversedCount >= 2
+        ? '運勢節奏偏慢，但並非壞運；關鍵是先修正，再放大。'
+        : '運勢可用性不錯，重點在於你是否願意照著牌面順序執行。';
 
       return `我們先一起看這組三張牌：\n` +
         `過去：${p.name}（${p.englishName}）${p.direction}\n` +
         `現在：${n.name}（${n.englishName}）${n.direction}\n` +
         `未來：${f.name}（${f.englishName}）${f.direction}\n\n` +
-        `先說整體感覺：你現在正處在“舊模式鬆動、新方向成形”的階段。` +
-        `過去位在解釋你為什麼會卡住，現在位告訴你該把力氣放哪，未來位給你趨勢提醒。${futureTone}\n\n` +
-        `情感：\n` +
-        `這組牌更像在提醒你，關係裡要“少猜、多說”。把真實需求講出來，比反覆內耗有效。` +
-        `如果有誤會，先處理情緒再談立場，會更容易和解。\n\n` +
-        `工作：\n` +
-        `當下工作重點是聚焦，不是加量。你把最核心任務先做深做透，結果會比同時開很多線更好。` +
-        `尤其現在位這張牌，已經把優先級給得很清楚了。\n\n` +
-        `金錢：\n` +
-        `財務上建議“先穩後進”。過去位和現在位說明你可能受舊決策影響，` +
-        `未來位則提醒你可以優化結構：先控風險、再找增長點，別讓情緒驅動花費。\n\n` +
-        `運勢：\n` +
-        `整體運勢不是突然暴漲型，而是「你越清楚，運就越順」。` +
-        `你如果按現在位給出的方向持續1到2週，體感會明顯好轉，事情也會更有秩序感。\n\n` +
-        `給你一句落地建議：\n` +
-        `“先把眼前最關鍵的一步走對，再讓後面的機會自然展開。”`;
+        `整體主題：${dominantLabel}。\n` +
+        `時間線訊號：過去位「${p.name}」解釋了你目前處境的根源，現在位「${n.name}」給出當下執行重點。` +
+        `${trendLine} ${pressureLine}\n\n` +
+        `情感：\n${emotionalLine}\n\n` +
+        `工作：\n${workLine}\n\n` +
+        `金錢：\n${moneyLine}\n\n` +
+        `運勢：\n${luckLine}\n\n` +
+        `一句落地建議：\n` +
+        `「先照現在位行動，再用未來位校正方向。」`;
     }
 
     function resetSlot(slot) {
@@ -573,14 +603,60 @@
       });
     }
 
-    deepThreeBtnEl.addEventListener('click', () => {
+    async function fetchThreeCardReading(cards) {
+      const payload = {
+        past: pickCardFields(cards.past),
+        present: pickCardFields(cards.present),
+        future: pickCardFields(cards.future)
+      };
+
+      const response = await fetch('/api/three-card-reading', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const msg = await response.text();
+        throw new Error(msg || 'API request failed');
+      }
+
+      const data = await response.json();
+      if (!data?.text) {
+        throw new Error('API returned empty text');
+      }
+      return data.text;
+    }
+
+    function pickCardFields(card) {
+      return {
+        name: card?.name,
+        englishName: card?.englishName,
+        direction: card?.direction,
+        meaning: card?.meaning
+      };
+    }
+
+    deepThreeBtnEl.addEventListener('click', async () => {
       if (!allSlotsFlipped()) return;
       const willOpen = !deepThreePanelEl.classList.contains('open');
       if (willOpen) {
-        deepThreeTextEl.textContent = buildThreeCardDeepReading(pendingCards);
         deepThreePanelEl.classList.add('open');
         deepThreeBtnEl.classList.add('open');
+        deepThreeTextEl.textContent = '正在連線 ChatGPT 生成深度解讀...';
         smoothFocusPanel(deepThreePanelEl);
+        const requestId = ++readingRequestId;
+        try {
+          const gptText = await fetchThreeCardReading(pendingCards);
+          if (requestId !== readingRequestId || !deepThreePanelEl.classList.contains('open')) return;
+          deepThreeTextEl.textContent = gptText;
+          smoothFocusPanel(deepThreePanelEl);
+        } catch (error) {
+          if (requestId !== readingRequestId || !deepThreePanelEl.classList.contains('open')) return;
+          deepThreeTextEl.textContent =
+            buildThreeCardDeepReading(pendingCards) +
+            '\n\n（目前 ChatGPT 連線失敗，已改用本地深度解讀。）';
+        }
         return;
       }
       deepThreePanelEl.classList.remove('open');

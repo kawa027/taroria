@@ -599,7 +599,7 @@
       if (willOpen) {
         deepDailyPanelEl.classList.add('open');
         deepDailyBtnEl.classList.add('open');
-        deepDailyTextEl.textContent = '正在連線 ChatGPT 生成深度解讀...';
+        deepDailyTextEl.textContent = '正在連線 Gemini 生成深度解讀...';
         smoothFocusPanel(deepDailyPanelEl);
         const requestId = ++dailyReadingRequestId;
         try {
@@ -612,7 +612,7 @@
           const errMsg = error instanceof Error ? error.message : String(error);
           deepDailyTextEl.textContent =
             buildDailyDeepReading(pendingCard) +
-            `\n\n（目前 ChatGPT 連線失敗，已改用本地深度解讀。錯誤：${errMsg}）`;
+            `\n\n（目前 Gemini 連線失敗，已改用本地深度解讀。錯誤：${errMsg}）`;
         }
         return;
       }

@@ -1,8 +1,8 @@
 export async function onRequestPost(context) {
   try {
-    const apiKey = context.env.OPENAI_API_KEY;
+    const apiKey = context.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return json({ error: 'Missing OPENAI_API_KEY' }, 500);
+      return json({ error: 'Missing GEMINI_API_KEY' }, 500);
     }
 
     const payload = await context.request.json();
@@ -18,23 +18,19 @@ export async function onRequestPost(context) {
       `2) 語氣自然、像對話，不空泛。\n` +
       `3) 不要輸出 Markdown 標題符號，直接純文字段落。`;
 
-    const response = await fetch('https://api.openai.com/v1/responses', {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        input: [
-          {
-            role: 'system',
-            content:
-              '你是專業塔羅諮詢師。輸出使用繁體中文，內容具體可行，避免神祕化空話。'
-          },
+        systemInstruction: {
+          parts: [{ text: '你是專業塔羅諮詢師。輸出使用繁體中文，內容具體可行，避免神祕化空話。' }]
+        },
+        contents: [
           {
             role: 'user',
-            content: userPrompt
+            parts: [{ text: userPrompt }]
           }
         ]
       })
@@ -42,11 +38,11 @@ export async function onRequestPost(context) {
 
     if (!response.ok) {
       const errText = await response.text();
-      return json({ error: `OpenAI request failed: ${errText}` }, 502);
+      return json({ error: `Gemini request failed: ${errText}` }, 502);
     }
 
     const data = await response.json();
-    const text = data?.output_text?.trim();
+    const text = data?.candidates?.[0]?.content?.parts?.map((p) => p?.text || '').join('').trim();
     if (!text) {
       return json({ error: 'Empty model response' }, 502);
     }

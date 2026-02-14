@@ -385,19 +385,28 @@
       gap: 10px;
     }
 
-    .hourglass {
-      display: inline-block;
-      font-size: 1rem;
-      color: var(--gold);
-      transform-origin: 50% 55%;
-      animation: hourglass-flip 1.25s ease-in-out infinite;
-      filter: drop-shadow(0 0 4px rgba(248, 215, 130, 0.35));
+    .loading-dots {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transform: translateY(1px);
     }
 
-    @keyframes hourglass-flip {
-      0%, 45% { transform: rotate(0deg); }
-      50%, 95% { transform: rotate(180deg); }
-      100% { transform: rotate(360deg); }
+    .loading-dots .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: 0.16;
+      animation: dots-mystic 1.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    .loading-dots .dot:nth-child(2) { animation-delay: 0.28s; }
+    .loading-dots .dot:nth-child(3) { animation-delay: 0.56s; }
+
+    @keyframes dots-mystic {
+      0%, 24%, 100% { opacity: 0.16; transform: scale(0.8); }
+      36%, 56% { opacity: 0.9; transform: scale(1.08); }
     }
 
     .deep-panel.is-loading .loading-block {
@@ -499,7 +508,7 @@
       <article class="deep-panel" id="deepThreePanel">
         <h3 class="deep-title">三張牌深度解讀</h3>
         <div class="loading-block" id="deepThreeLoading">
-          <p class="loading-label" id="deepThreeLoadingLabel">正在讀取祕密脈絡 <span class="hourglass" aria-hidden="true">⌛</span></p>
+          <p class="loading-label" id="deepThreeLoadingLabel">正在讀取祕密脈絡 <span class="loading-dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></p>
         </div>
         <p class="deep-text" id="deepThreeText">請先翻開過去、現在、未來三張牌，再查看整組解讀。</p>
       </article>
@@ -529,6 +538,8 @@
     const flippedSlots = { past: false, present: false, future: false };
     let readingRequestId = 0;
     let threeProgressController = null;
+    let threeReadingCacheKey = '';
+    let threeReadingCacheText = '';
 
     function allSlotsFlipped() {
       return slotIds.every((slot) => flippedSlots[slot]);
@@ -618,6 +629,8 @@
       deepThreeBtnEl.classList.remove('open');
       deepThreePanelEl.classList.remove('open');
       deepThreeTextEl.textContent = '請先翻開過去、現在、未來三張牌，再查看整組解讀。';
+      threeReadingCacheKey = '';
+      threeReadingCacheText = '';
       slotIds.forEach((slot, index) => {
         const cardEl = document.getElementById(`${slot}Card`);
         cardEl.classList.remove('is-dealt', 'is-flipped');
@@ -647,7 +660,7 @@
     }
 
     function startLoadingProgress(labelEl) {
-      labelEl.innerHTML = '正在讀取祕密脈絡 <span class="hourglass" aria-hidden="true">⌛</span>';
+      labelEl.innerHTML = '正在讀取祕密脈絡 <span class="loading-dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>';
       return {
         finish() {
           labelEl.textContent = '解讀完成';
@@ -696,10 +709,23 @@
       };
     }
 
+    function buildThreeCacheKey(cards) {
+      const keyOf = (card) => `${card?.englishName || ''}|${card?.direction || ''}|${card?.meaning || ''}`;
+      return [keyOf(cards?.past), keyOf(cards?.present), keyOf(cards?.future)].join('||');
+    }
+
     deepThreeBtnEl.addEventListener('click', async () => {
       if (!allSlotsFlipped()) return;
       const willOpen = !deepThreePanelEl.classList.contains('open');
       if (willOpen) {
+        const cacheKey = buildThreeCacheKey(pendingCards);
+        if (threeReadingCacheKey === cacheKey && threeReadingCacheText) {
+          deepThreePanelEl.classList.add('open');
+          deepThreeBtnEl.classList.add('open');
+          deepThreeTextEl.textContent = threeReadingCacheText;
+          smoothFocusPanel(deepThreePanelEl);
+          return;
+        }
         deepThreePanelEl.classList.add('open');
         deepThreePanelEl.classList.add('is-loading');
         deepThreeBtnEl.classList.add('open');
@@ -714,13 +740,18 @@
           await new Promise((resolve) => setTimeout(resolve, 120));
           deepThreePanelEl.classList.remove('is-loading');
           deepThreeTextEl.textContent = gptText;
+          threeReadingCacheKey = cacheKey;
+          threeReadingCacheText = gptText;
           smoothFocusPanel(deepThreePanelEl);
-        } catch (error) {
+        } catch (_) {
           if (requestId !== readingRequestId || !deepThreePanelEl.classList.contains('open')) return;
           threeProgressController?.finish();
           await new Promise((resolve) => setTimeout(resolve, 120));
           deepThreePanelEl.classList.remove('is-loading');
-          deepThreeTextEl.textContent = buildThreeCardDeepReading(pendingCards);
+          const fallbackText = buildThreeCardDeepReading(pendingCards);
+          deepThreeTextEl.textContent = fallbackText;
+          threeReadingCacheKey = cacheKey;
+          threeReadingCacheText = fallbackText;
         }
         return;
       }

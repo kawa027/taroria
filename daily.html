@@ -399,19 +399,28 @@
       gap: 10px;
     }
 
-    .hourglass {
-      display: inline-block;
-      font-size: 1rem;
-      color: var(--gold);
-      transform-origin: 50% 55%;
-      animation: hourglass-flip 1.25s ease-in-out infinite;
-      filter: drop-shadow(0 0 4px rgba(248, 215, 130, 0.35));
+    .loading-dots {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transform: translateY(1px);
     }
 
-    @keyframes hourglass-flip {
-      0%, 45% { transform: rotate(0deg); }
-      50%, 95% { transform: rotate(180deg); }
-      100% { transform: rotate(360deg); }
+    .loading-dots .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: 0.16;
+      animation: dots-mystic 1.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    .loading-dots .dot:nth-child(2) { animation-delay: 0.28s; }
+    .loading-dots .dot:nth-child(3) { animation-delay: 0.56s; }
+
+    @keyframes dots-mystic {
+      0%, 24%, 100% { opacity: 0.16; transform: scale(0.8); }
+      36%, 56% { opacity: 0.9; transform: scale(1.08); }
     }
 
     .deep-panel.is-loading .loading-block {
@@ -489,7 +498,7 @@
       <article class="deep-panel" id="deepDailyPanel">
         <h3 class="deep-title">今日牌深度解讀</h3>
         <div class="loading-block" id="deepDailyLoading">
-          <p class="loading-label" id="deepDailyLoadingLabel">正在讀取祕密脈絡 <span class="hourglass" aria-hidden="true">⌛</span></p>
+          <p class="loading-label" id="deepDailyLoadingLabel">正在讀取祕密脈絡 <span class="loading-dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></p>
         </div>
         <p class="deep-text" id="deepDailyText">翻開牌後，你可以在這裡查看更完整的解讀。</p>
       </article>
@@ -516,6 +525,8 @@
     let hasFlipped = false;
     let dailyReadingRequestId = 0;
     let dailyProgressController = null;
+    let dailyReadingCacheKey = '';
+    let dailyReadingCacheText = '';
     cardBackImgEl.src = window.TAROT.cardBackImage;
 
     function buildDailyDeepReading(card) {
@@ -579,6 +590,8 @@
       deepDailyBtnEl.classList.remove('open');
       deepDailyPanelEl.classList.remove('open');
       deepDailyTextEl.textContent = '翻開牌後，你可以在這裡查看更完整的解讀。';
+      dailyReadingCacheKey = '';
+      dailyReadingCacheText = '';
     }
 
     function flipDailyCard() {
@@ -605,7 +618,7 @@
     }
 
     function startLoadingProgress(labelEl) {
-      labelEl.innerHTML = '正在讀取祕密脈絡 <span class="hourglass" aria-hidden="true">⌛</span>';
+      labelEl.innerHTML = '正在讀取祕密脈絡 <span class="loading-dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>';
       return {
         finish() {
           labelEl.textContent = '解讀完成';
@@ -646,10 +659,22 @@
       return data.text;
     }
 
+    function buildDailyCacheKey(card) {
+      return `${card?.englishName || ''}|${card?.direction || ''}|${card?.meaning || ''}`;
+    }
+
     deepDailyBtnEl.addEventListener('click', async () => {
       if (!pendingCard || !hasFlipped) return;
       const willOpen = !deepDailyPanelEl.classList.contains('open');
       if (willOpen) {
+        const cacheKey = buildDailyCacheKey(pendingCard);
+        if (dailyReadingCacheKey === cacheKey && dailyReadingCacheText) {
+          deepDailyPanelEl.classList.add('open');
+          deepDailyBtnEl.classList.add('open');
+          deepDailyTextEl.textContent = dailyReadingCacheText;
+          smoothFocusPanel(deepDailyPanelEl);
+          return;
+        }
         deepDailyPanelEl.classList.add('open');
         deepDailyPanelEl.classList.add('is-loading');
         deepDailyBtnEl.classList.add('open');
@@ -664,13 +689,18 @@
           await new Promise((resolve) => setTimeout(resolve, 120));
           deepDailyPanelEl.classList.remove('is-loading');
           deepDailyTextEl.textContent = gptText;
+          dailyReadingCacheKey = cacheKey;
+          dailyReadingCacheText = gptText;
           smoothFocusPanel(deepDailyPanelEl);
-        } catch (error) {
+        } catch (_) {
           if (requestId !== dailyReadingRequestId || !deepDailyPanelEl.classList.contains('open')) return;
           dailyProgressController?.finish();
           await new Promise((resolve) => setTimeout(resolve, 120));
           deepDailyPanelEl.classList.remove('is-loading');
-          deepDailyTextEl.textContent = buildDailyDeepReading(pendingCard);
+          const fallbackText = buildDailyDeepReading(pendingCard);
+          deepDailyTextEl.textContent = fallbackText;
+          dailyReadingCacheKey = cacheKey;
+          dailyReadingCacheText = fallbackText;
         }
         return;
       }

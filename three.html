@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="zh-Hans">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Taroria · 過去，現在，未來</title>
+  <title>Taroria · 过去，现在，未来</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Noto+Serif+SC:wght@400;700&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg-1: #060a1b;
@@ -24,7 +24,7 @@
       margin: 0;
       min-height: 100vh;
       color: var(--text);
-      font-family: "Cinzel Decorative", "Noto Serif TC", "PMingLiU", "MingLiU", serif;
+      font-family: "Cinzel Decorative", "Noto Serif SC", "Noto Serif TC", "PingFang SC", "Microsoft YaHei", serif;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -82,7 +82,7 @@
       display: inline-block;
       pointer-events: none;
       width: max-content;
-      font-family: "Cinzel Decorative", "Noto Serif TC", "PMingLiU", "MingLiU", serif;
+      font-family: "Cinzel Decorative", "Noto Serif SC", "Noto Serif TC", serif;
       font-size: clamp(1.1rem, 2.5vw, 1.55rem);
       letter-spacing: 0.14em;
       color: transparent;
@@ -128,7 +128,7 @@
     .title {
       margin: 0;
       text-align: center;
-      font-family: "Cinzel Decorative", "Noto Serif TC", "PMingLiU", "MingLiU", serif;
+      font-family: "Cinzel Decorative", "Noto Serif SC", "Noto Serif TC", "PingFang SC", "Microsoft YaHei", serif;
       font-size: clamp(1.8rem, 5vw, 3rem);
       letter-spacing: 0.08em;
       color: var(--gold);
@@ -150,7 +150,7 @@
       cursor: pointer;
       border-radius: 999px;
       padding: 12px 28px;
-      font-family: "Cinzel Decorative", "Noto Serif TC", "PMingLiU", "MingLiU", serif;
+      font-family: "Cinzel Decorative", "Noto Serif SC", "Noto Serif TC", "PingFang SC", "Microsoft YaHei", serif;
       font-size: 1rem;
       font-weight: 700;
       color: #2d1b00;
@@ -235,7 +235,7 @@
       color: #f8f0db;
       box-shadow: 0 12px 24px rgba(0, 0, 0, 0.38), inset 0 0 0 2px rgba(248, 215, 130, 0.46);
       overflow: hidden;
-      font-family: "Cinzel Decorative", "Noto Serif TC", "PMingLiU", "MingLiU", serif;
+      font-family: "Cinzel Decorative", "Noto Serif SC", "Noto Serif TC", "PingFang SC", "Microsoft YaHei", serif;
       letter-spacing: 0.14em;
     }
 
@@ -332,7 +332,7 @@
 
     .deep-panel {
       display: none;
-      margin-top: 10px;
+      margin-top: 24px;
       border-radius: 14px;
       padding: 14px;
       background: rgba(9, 14, 35, 0.72);
@@ -440,77 +440,77 @@
 </head>
 <body>
   <div class="site-logo" aria-hidden="true">Taroria</div>
-  <a class="back" href="./draw.html" aria-label="返回抽牌方式頁">
+  <a class="back" href="./draw.html" aria-label="返回抽牌方式页">
     <svg class="back-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M5 12H19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
       <path d="M13 6L19 12L13 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
-    <span class="sr-only">返回抽牌方式頁</span>
+    <span class="sr-only">返回抽牌方式页</span>
   </a>
 
   <main class="layout">
-    <h1 class="title">過去，現在，未來</h1>
-    <p class="hint">先點擊“抽取三張牌”發出牌背，再分別點擊每張牌背翻開</p>
-    <button class="draw-btn" id="drawThreeBtn">抽取三張牌</button>
+    <h1 class="title">过去，现在，未来</h1>
+    <p class="hint">先点击“抽取三张牌”发出牌背，再分别点击每张牌背翻开</p>
+    <button class="draw-btn" id="drawThreeBtn">抽取三张牌</button>
 
     <section class="spread" aria-live="polite">
       <article class="slot" data-slot="past">
-        <h2 class="slot-title">過去</h2>
-        <button class="card" aria-label="過去牌" id="pastCard">
+        <h2 class="slot-title">过去</h2>
+        <button class="card" aria-label="过去牌" id="pastCard">
           <span class="card-inner">
-            <span class="card-side card-back"><img id="pastBackImg" alt="過去牌背" /></span>
-            <span class="card-side card-front"><img id="pastFrontImg" alt="過去牌面" /></span>
+            <span class="card-side card-back"><img id="pastBackImg" alt="过去牌背" /></span>
+            <span class="card-side card-front"><img id="pastFrontImg" alt="过去牌面" /></span>
           </span>
         </button>
         <h3 class="name" id="pastName">等待抽牌</h3>
         <p class="en-name" id="pastEn">Waiting</p>
-        <span class="tag" id="pastDir">位置：過去</span>
-        <p class="meaning" id="pastMeaning">這裡會展示過去影響你的關鍵能量。</p>
+        <span class="tag" id="pastDir">位置：过去</span>
+        <p class="meaning" id="pastMeaning">这里会展示过去影响你的关键能量。</p>
       </article>
 
       <article class="slot" data-slot="present">
-        <h2 class="slot-title">現在</h2>
-        <button class="card" aria-label="現在牌" id="presentCard">
+        <h2 class="slot-title">现在</h2>
+        <button class="card" aria-label="现在牌" id="presentCard">
           <span class="card-inner">
-            <span class="card-side card-back"><img id="presentBackImg" alt="現在牌背" /></span>
-            <span class="card-side card-front"><img id="presentFrontImg" alt="現在牌面" /></span>
+            <span class="card-side card-back"><img id="presentBackImg" alt="现在牌背" /></span>
+            <span class="card-side card-front"><img id="presentFrontImg" alt="现在牌面" /></span>
           </span>
         </button>
         <h3 class="name" id="presentName">等待抽牌</h3>
         <p class="en-name" id="presentEn">Waiting</p>
-        <span class="tag" id="presentDir">位置：現在</span>
-        <p class="meaning" id="presentMeaning">這裡會展示你當前最核心的課題。</p>
+        <span class="tag" id="presentDir">位置：现在</span>
+        <p class="meaning" id="presentMeaning">这里会展示你当前最核心的课题。</p>
       </article>
 
       <article class="slot" data-slot="future">
-        <h2 class="slot-title">未來</h2>
-        <button class="card" aria-label="未來牌" id="futureCard">
+        <h2 class="slot-title">未来</h2>
+        <button class="card" aria-label="未来牌" id="futureCard">
           <span class="card-inner">
-            <span class="card-side card-back"><img id="futureBackImg" alt="未來牌背" /></span>
-            <span class="card-side card-front"><img id="futureFrontImg" alt="未來牌面" /></span>
+            <span class="card-side card-back"><img id="futureBackImg" alt="未来牌背" /></span>
+            <span class="card-side card-front"><img id="futureFrontImg" alt="未来牌面" /></span>
           </span>
         </button>
         <h3 class="name" id="futureName">等待抽牌</h3>
         <p class="en-name" id="futureEn">Waiting</p>
-        <span class="tag" id="futureDir">位置：未來</span>
-        <p class="meaning" id="futureMeaning">這裡會展示接下來發展的趨勢與建議。</p>
+        <span class="tag" id="futureDir">位置：未来</span>
+        <p class="meaning" id="futureMeaning">这里会展示接下来发展的趋势与建议。</p>
       </article>
     </section>
 
     <section class="deep-wrap" aria-live="polite">
-      <button class="deep-btn" id="deepThreeBtn" disabled aria-label="展開深度解讀">
+      <button class="deep-btn" id="deepThreeBtn" disabled aria-label="展开深度解读">
         <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M5 12H19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
           <path d="M13 6L19 12L13 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-        <span class="sr-only">深度解讀</span>
+        <span class="sr-only">深度解读</span>
       </button>
       <article class="deep-panel" id="deepThreePanel">
-        <h3 class="deep-title">三張牌深度解讀</h3>
+        <h3 class="deep-title">三张牌深度解读</h3>
         <div class="loading-block" id="deepThreeLoading">
-          <p class="loading-label" id="deepThreeLoadingLabel">正在讀取祕密脈絡 <span class="loading-dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></p>
+          <p class="loading-label" id="deepThreeLoadingLabel">正在读取秘密脉络 <span class="loading-dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></p>
         </div>
-        <p class="deep-text" id="deepThreeText">請先翻開過去、現在、未來三張牌，再查看整組解讀。</p>
+        <p class="deep-text" id="deepThreeText">请先翻开过去、现在、未来三张牌，再查看整组解读。</p>
       </article>
     </section>
   </main>
@@ -521,7 +521,7 @@
     function renderSlot(slot, picked) {
       document.getElementById(`${slot}Name`).textContent = picked.name;
       document.getElementById(`${slot}En`).textContent = picked.englishName;
-      document.getElementById(`${slot}Dir`).textContent = `位置：${slot === 'past' ? '過去' : slot === 'present' ? '現在' : '未來'} · ${picked.direction}`;
+      document.getElementById(`${slot}Dir`).textContent = `位置：${slot === 'past' ? '过去' : slot === 'present' ? '现在' : '未来'} · ${picked.direction}`;
       document.getElementById(`${slot}Meaning`).textContent = picked.meaning;
       const frontImg = document.getElementById(`${slot}FrontImg`);
       frontImg.src = picked.image;
@@ -558,60 +558,60 @@
       }, {});
       const dominantKey = Object.keys(suitCount).sort((a, b) => suitCount[b] - suitCount[a])[0];
       const dominantLabelMap = {
-        major: '大阿爾卡那主題',
-        '聖杯': '情感與關係',
-        '星幣': '現實與資源',
-        '寶劍': '思維與決斷',
-        '權杖': '行動與推進'
+        major: '大阿尔卡那主题',
+        '圣杯': '情感与关系',
+        '星币': '现实与资源',
+        '宝剑': '思维与决断',
+        '权杖': '行动与推进'
       };
-      const dominantLabel = dominantLabelMap[dominantKey] || '整體課題';
+      const dominantLabel = dominantLabelMap[dominantKey] || '整体课题';
       const trendLine = f.reversed
-        ? `未來位「${f.name}」逆位，表示短期會先修正路線，再進入穩定推進。`
-        : `未來位「${f.name}」正位，表示後續的推進窗口正在打開。`;
+        ? `未来位「${f.name}」逆位，表示短期会先修正路线，再进入稳定推进。`
+        : `未来位「${f.name}」正位，表示后续的推进窗口正在打开。`;
       const pressureLine = reversedCount >= 2
-        ? '三張中逆位偏多，代表目前不是硬推時機，先校準節奏更關鍵。'
+        ? '三张中逆位偏多，代表目前不是硬推时机，先校准节奏更关键。'
         : reversedCount === 0
-          ? '三張皆正位，代表外在支持度高，適合果斷執行。'
-          : '正逆位混合，代表邊推進邊修正會是最有效策略。';
+          ? '三张皆正位，代表外在支持度高，适合果断执行。'
+          : '正逆位混合，代表边推进边修正会是最有效策略。';
 
-      const emotionalLine = p.suit === '聖杯' || n.suit === '聖杯' || f.suit === '聖杯'
-        ? '情感面重點在「說出需求」：先把感受講清楚，關係才會往你要的方向移動。'
-        : `情感面更像是「內在整理」：尤其現在位「${n.name}」，提醒你先辨識自己的底線與期待。`;
+      const emotionalLine = p.suit === '圣杯' || n.suit === '圣杯' || f.suit === '圣杯'
+        ? '情感面重点在「说出需求」：先把感受讲清楚，关系才会往你要的方向移动。'
+        : `情感面更像是「内在整理」：尤其现在位「${n.name}」，提醒你先辨识自己的底线与期待。`;
 
-      const workLine = `工作面請以現在位「${n.name}」為核心：` +
-        `${n.reversed ? '先排除干擾、聚焦一件要緊事。' : '把關鍵任務直接推進到可見成果。'}`;
+      const workLine = `工作面请以现在位「${n.name}」为核心：` +
+        `${n.reversed ? '先排除干扰、聚焦一件要紧事。' : '把关键任务直接推进到可见成果。'}`;
 
-      const moneyLine = dominantKey === '星幣'
-        ? '金錢面由星幣能量主導，適合做務實規劃：預算、成本、回報節奏要先排好。'
-        : `金錢面受「${dominantLabel}」影響較大，建議先穩再進，避免情緒型決策。`;
+      const moneyLine = dominantKey === '星币'
+        ? '金钱面由星币能量主导，适合做务实规划：预算、成本、回报节奏要先排好。'
+        : `金钱面受「${dominantLabel}」影响较大，建议先稳再进，避免情绪型决策。`;
 
       const luckLine = reversedCount >= 2
-        ? '運勢節奏偏慢，但並非壞運；關鍵是先修正，再放大。'
-        : '運勢可用性不錯，重點在於你是否願意照著牌面順序執行。';
+        ? '运势节奏偏慢，但并非坏运；关键是先修正，再放大。'
+        : '运势可用性不错，重点在于你是否愿意照着牌面顺序执行。';
 
-      return `我們先一起看這組三張牌：\n` +
-        `過去：${p.name}（${p.englishName}）${p.direction}\n` +
-        `現在：${n.name}（${n.englishName}）${n.direction}\n` +
-        `未來：${f.name}（${f.englishName}）${f.direction}\n\n` +
-        `整體主題：${dominantLabel}。\n` +
-        `時間線訊號：過去位「${p.name}」解釋了你目前處境的根源，現在位「${n.name}」給出當下執行重點。` +
+      return `我们先一起看这组三张牌：\n` +
+        `过去：${p.name}（${p.englishName}）${p.direction}\n` +
+        `现在：${n.name}（${n.englishName}）${n.direction}\n` +
+        `未来：${f.name}（${f.englishName}）${f.direction}\n\n` +
+        `整体主题：${dominantLabel}。\n` +
+        `时间线信号：过去位「${p.name}」解释了你目前处境的根源，现在位「${n.name}」给出当下执行重点。` +
         `${trendLine} ${pressureLine}\n\n` +
         `情感：\n${emotionalLine}\n\n` +
         `工作：\n${workLine}\n\n` +
-        `金錢：\n${moneyLine}\n\n` +
-        `運勢：\n${luckLine}\n\n` +
-        `一句落地建議：\n` +
-        `「先照現在位行動，再用未來位校正方向。」`;
+        `金钱：\n${moneyLine}\n\n` +
+        `运势：\n${luckLine}\n\n` +
+        `一句落地建议：\n` +
+        `「先照现在位行动，再用未来位校正方向。」`;
     }
 
     function resetSlot(slot) {
-      const positionLabel = slot === 'past' ? '過去' : slot === 'present' ? '現在' : '未來';
+      const positionLabel = slot === 'past' ? '过去' : slot === 'present' ? '现在' : '未来';
       document.getElementById(`${slot}Card`).classList.remove('is-flipped');
       flippedSlots[slot] = false;
       document.getElementById(`${slot}Name`).textContent = '等待翻牌';
       document.getElementById(`${slot}En`).textContent = 'Waiting';
       document.getElementById(`${slot}Dir`).textContent = `位置：${positionLabel}`;
-      document.getElementById(`${slot}Meaning`).textContent = '已抽好，點擊牌背翻開。';
+      document.getElementById(`${slot}Meaning`).textContent = '已抽好，点击牌背翻开。';
       const backImg = document.getElementById(`${slot}BackImg`);
       const frontImg = document.getElementById(`${slot}FrontImg`);
       backImg.src = window.TAROT.cardBackImage;
@@ -628,7 +628,7 @@
       deepThreeBtnEl.disabled = true;
       deepThreeBtnEl.classList.remove('open');
       deepThreePanelEl.classList.remove('open');
-      deepThreeTextEl.textContent = '請先翻開過去、現在、未來三張牌，再查看整組解讀。';
+      deepThreeTextEl.textContent = '请先翻开过去、现在、未来三张牌，再查看整组解读。';
       threeReadingCacheKey = '';
       threeReadingCacheText = '';
       slotIds.forEach((slot, index) => {
@@ -651,19 +651,40 @@
     }
 
     function smoothFocusPanel(panelEl) {
-      requestAnimationFrame(() => {
+      const scrollToTarget = () => {
+        if (!panelEl) return;
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+        const panelRect = panelEl.getBoundingClientRect();
+        const panelHeight = panelRect.height;
+
+        // Long reading: align panel start to viewport top.
+        if (panelHeight > viewportHeight) {
+          const panelTop = window.scrollY + panelRect.top;
+          window.scrollTo({
+            top: Math.max(panelTop, 0),
+            behavior: 'smooth'
+          });
+          return;
+        }
+
+        // Short reading: focus at page bottom.
         window.scrollTo({
-          top: Math.max(document.documentElement.scrollHeight - window.innerHeight, 0),
+          top: Math.max(document.documentElement.scrollHeight - viewportHeight, 0),
           behavior: 'smooth'
         });
+      };
+      requestAnimationFrame(() => {
+        scrollToTarget();
+        setTimeout(scrollToTarget, 260);
+        setTimeout(scrollToTarget, 620);
       });
     }
 
     function startLoadingProgress(labelEl) {
-      labelEl.innerHTML = '正在讀取祕密脈絡 <span class="loading-dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>';
+      labelEl.innerHTML = '正在读取秘密脉络 <span class="loading-dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>';
       return {
         finish() {
-          labelEl.textContent = '解讀完成';
+          labelEl.textContent = '解读完成';
         },
         stop() {}
       };

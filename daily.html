@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="zh-Hans">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Taroria · 今日運勢</title>
+  <title>Taroria · 今日运势</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Noto+Serif+SC:wght@400;700&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg-1: #060a1b;
@@ -24,7 +24,7 @@
       margin: 0;
       min-height: 100vh;
       color: var(--text);
-      font-family: "Cinzel Decorative", "Noto Serif TC", "PMingLiU", "MingLiU", serif;
+      font-family: "Cinzel Decorative", "Noto Serif SC", "Noto Serif TC", "PingFang SC", "Microsoft YaHei", serif;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -82,7 +82,7 @@
       display: inline-block;
       pointer-events: none;
       width: max-content;
-      font-family: "Cinzel Decorative", "Noto Serif TC", "PMingLiU", "MingLiU", serif;
+      font-family: "Cinzel Decorative", "Noto Serif SC", "Noto Serif TC", serif;
       font-size: clamp(1.1rem, 2.5vw, 1.55rem);
       letter-spacing: 0.14em;
       color: transparent;
@@ -128,7 +128,7 @@
     .title {
       margin: 0;
       text-align: center;
-      font-family: "Cinzel Decorative", "Noto Serif TC", "PMingLiU", "MingLiU", serif;
+      font-family: "Cinzel Decorative", "Noto Serif SC", "Noto Serif TC", "PingFang SC", "Microsoft YaHei", serif;
       font-size: clamp(2rem, 5.2vw, 3.2rem);
       letter-spacing: 0.08em;
       color: var(--gold);
@@ -258,7 +258,7 @@
       cursor: pointer;
       border-radius: 999px;
       padding: 12px 24px;
-      font-family: "Cinzel Decorative", "Noto Serif TC", "PMingLiU", "MingLiU", serif;
+      font-family: "Cinzel Decorative", "Noto Serif SC", "Noto Serif TC", "PingFang SC", "Microsoft YaHei", serif;
       font-size: 1rem;
       font-weight: 700;
       color: #2d1b00;
@@ -346,7 +346,7 @@
 
     .deep-panel {
       display: none;
-      margin-top: 10px;
+      margin-top: 24px;
       border-radius: 14px;
       padding: 14px;
       background: rgba(9, 14, 35, 0.72);
@@ -454,24 +454,24 @@
 </head>
 <body>
   <div class="site-logo" aria-hidden="true">Taroria</div>
-  <a class="back" href="./draw.html" aria-label="返回抽牌方式頁">
+  <a class="back" href="./draw.html" aria-label="返回抽牌方式页">
     <svg class="back-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M5 12H19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
       <path d="M13 6L19 12L13 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
-    <span class="sr-only">返回抽牌方式頁</span>
+    <span class="sr-only">返回抽牌方式页</span>
   </a>
 
   <main class="layout">
-    <h1 class="title">今日運勢</h1>
-    <p class="hint">先點擊“抽取今日牌”發牌背，再點擊牌背翻開今日指引</p>
+    <h1 class="title">今日运势</h1>
+    <p class="hint">先点击“抽取今日牌”发牌背，再点击牌背翻开今日指引</p>
 
     <section class="content">
       <div class="card-wrap">
-        <button class="tarot-card" id="cardBtn" aria-label="點擊抽取今日塔羅牌">
+        <button class="tarot-card" id="cardBtn" aria-label="点击抽取今日塔罗牌">
           <span class="card-inner">
-            <span class="card-side card-back"><img id="cardBackImg" alt="塔羅牌背" /></span>
-            <span class="card-side card-front"><img id="cardFrontImg" alt="塔羅牌面" /></span>
+            <span class="card-side card-back"><img id="cardBackImg" alt="塔罗牌背" /></span>
+            <span class="card-side card-front"><img id="cardFrontImg" alt="塔罗牌面" /></span>
           </span>
         </button>
         <p class="img-en-name" id="cardImgEnglishName">Waiting</p>
@@ -482,25 +482,25 @@
         <h2 id="cardName">等待抽牌</h2>
         <p class="en-name" id="cardEnglishName">Waiting to reveal</p>
         <span class="tag" id="cardDirection">今日提示</span>
-        <p class="meaning" id="cardMeaning">你的能量還在匯聚。準備好後抽一張牌，查看今天的重點訊息。</p>
-        <p class="tip">每日建議只抽一張，給自己一個清晰而穩定的行動方向。</p>
+        <p class="meaning" id="cardMeaning">你的能量还在汇聚。准备好后抽一张牌，查看今天的重点讯息。</p>
+        <p class="tip">每日建议只抽一张，给自己一个清晰而稳定的行动方向。</p>
       </article>
     </section>
 
     <section class="deep-wrap" aria-live="polite">
-      <button class="deep-btn" id="deepDailyBtn" disabled aria-label="展開深度解讀">
+      <button class="deep-btn" id="deepDailyBtn" disabled aria-label="展开深度解读">
         <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M5 12H19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
           <path d="M13 6L19 12L13 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-        <span class="sr-only">深度解讀</span>
+        <span class="sr-only">深度解读</span>
       </button>
       <article class="deep-panel" id="deepDailyPanel">
-        <h3 class="deep-title">今日牌深度解讀</h3>
+        <h3 class="deep-title">今日牌深度解读</h3>
         <div class="loading-block" id="deepDailyLoading">
-          <p class="loading-label" id="deepDailyLoadingLabel">正在讀取祕密脈絡 <span class="loading-dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></p>
+          <p class="loading-label" id="deepDailyLoadingLabel">正在读取秘密脉络 <span class="loading-dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></p>
         </div>
-        <p class="deep-text" id="deepDailyText">翻開牌後，你可以在這裡查看更完整的解讀。</p>
+        <p class="deep-text" id="deepDailyText">翻开牌后，你可以在这里查看更完整的解读。</p>
       </article>
     </section>
   </main>
@@ -530,47 +530,47 @@
     cardBackImgEl.src = window.TAROT.cardBackImage;
 
     function buildDailyDeepReading(card) {
-      const isMajor = card.arcana === '大阿爾卡那';
+      const isMajor = card.arcana === '大阿尔卡那';
       const suitToneMap = {
-        '聖杯': '情感與關係',
-        '星幣': '現實與資源',
-        '寶劍': '思維與決斷',
-        '權杖': '行動與推進'
+        '圣杯': '情感与关系',
+        '星币': '现实与资源',
+        '宝剑': '思维与决断',
+        '权杖': '行动与推进'
       };
-      const suitTone = suitToneMap[card.suit] || '核心課題';
+      const suitTone = suitToneMap[card.suit] || '核心课题';
       const directionTone = card.reversed
-        ? '今天比較適合先修正、先收斂，不急著擴張。'
-        : '今天適合順勢推進，主動做出一個明確動作。';
+        ? '今天比较适合先修正、先收敛，不急着扩张。'
+        : '今天适合顺势推进，主动做出一个明确动作。';
       const baseHint = String(card.meaning).replace(/^正位提示：|^逆位提示：/, '');
 
       const emotionalLine = card.reversed
-        ? `「${card.name}」逆位在情感上提醒你：先處理內在不安，再談關係裡的對錯。`
-        : `「${card.name}」正位在情感上給你的訊號是：真誠表達會帶來關係修復與靠近。`;
+        ? `「${card.name}」逆位在情感上提醒你：先处理内在不安，再谈关系里的对错。`
+        : `「${card.name}」正位在情感上给你的讯号是：真诚表达会带来关系修复与靠近。`;
 
       const workLine = isMajor
-        ? `工作面上，這張大阿爾卡那更像“主題牌”，表示你今天的關鍵任務是：圍繞「${card.name}」的能量完成一個核心決策。`
-        : `工作面上，你抽到的是「${card.suit}」系統，主軸在${suitTone}。今天請優先處理「${card.focus}」這件事。`;
+        ? `工作面上，这张大阿尔卡那更像“主题牌”，表示你今天的关键任务是：围绕「${card.name}」的能量完成一个核心决策。`
+        : `工作面上，你抽到的是「${card.suit}」系统，主轴在${suitTone}。今天请优先处理「${card.focus}」这件事。`;
 
-      const moneyLine = card.suit === '星幣'
+      const moneyLine = card.suit === '星币'
         ? (card.reversed
-            ? '金錢面要先補漏洞：暫緩高風險投入，先把既有開支與現金流校正。'
-            : '金錢面偏穩定：適合做務實規劃、分配預算，並推進可落地的財務安排。')
+            ? '金钱面要先补漏洞：暂缓高风险投入，先把既有开支与现金流校正。'
+            : '金钱面偏稳定：适合做务实规划、分配预算，并推进可落地的财务安排。')
         : (card.reversed
-            ? '金錢面建議保守：先觀察、先盤點，再做額外承諾。'
-            : '金錢面可小步前進：以穩定增量為主，不必一次壓重注。');
+            ? '金钱面建议保守：先观察、先盘点，再做额外承诺。'
+            : '金钱面可小步前进：以稳定增量为主，不必一次压重注。');
 
       const luckLine = card.reversed
-        ? '整體運勢屬於「可調整型」，你越願意放慢一步，後面的路越清楚。'
-        : '整體運勢屬於「可放大型」，你越果斷聚焦，正向回饋越快出現。';
+        ? '整体运势属于「可调整型」，你越愿意放慢一步，后面的路越清楚。'
+        : '整体运势属于「可放大型」，你越果断聚焦，正向回馈越快出现。';
 
       return `你今天抽到的是「${card.name}（${card.englishName}）」${card.direction}。\n` +
         `核心提示：${baseHint}。${directionTone}\n\n` +
         `情感：\n${emotionalLine}\n\n` +
         `工作：\n${workLine}\n\n` +
-        `金錢：\n${moneyLine}\n\n` +
-        `運勢：\n${luckLine}\n\n` +
-        `一句今日行動：\n` +
-        `「以${card.name}為主軸，先把最關鍵的一步走穩。」`;
+        `金钱：\n${moneyLine}\n\n` +
+        `运势：\n${luckLine}\n\n` +
+        `一句今日行动：\n` +
+        `「以${card.name}为主轴，先把最关键的一步走稳。」`;
     }
 
     function dealDailyCard() {
@@ -585,11 +585,11 @@
       cardNameEl.textContent = '等待翻牌';
       cardEnglishNameEl.textContent = 'Waiting to reveal';
       cardDirectionEl.textContent = '今日提示';
-      cardMeaningEl.textContent = '牌已抽出。點擊左侧牌背，翻開你今天的訊息。';
+      cardMeaningEl.textContent = '牌已抽出。点击左侧牌背，翻开你今天的讯息。';
       deepDailyBtnEl.disabled = true;
       deepDailyBtnEl.classList.remove('open');
       deepDailyPanelEl.classList.remove('open');
-      deepDailyTextEl.textContent = '翻開牌後，你可以在這裡查看更完整的解讀。';
+      deepDailyTextEl.textContent = '翻开牌后，你可以在这里查看更完整的解读。';
       dailyReadingCacheKey = '';
       dailyReadingCacheText = '';
     }
@@ -609,19 +609,40 @@
     }
 
     function smoothFocusPanel(panelEl) {
-      requestAnimationFrame(() => {
+      const scrollToTarget = () => {
+        if (!panelEl) return;
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+        const panelRect = panelEl.getBoundingClientRect();
+        const panelHeight = panelRect.height;
+
+        // Long reading: align panel start to viewport top.
+        if (panelHeight > viewportHeight) {
+          const panelTop = window.scrollY + panelRect.top;
+          window.scrollTo({
+            top: Math.max(panelTop, 0),
+            behavior: 'smooth'
+          });
+          return;
+        }
+
+        // Short reading: focus at page bottom.
         window.scrollTo({
-          top: Math.max(document.documentElement.scrollHeight - window.innerHeight, 0),
+          top: Math.max(document.documentElement.scrollHeight - viewportHeight, 0),
           behavior: 'smooth'
         });
+      };
+      requestAnimationFrame(() => {
+        scrollToTarget();
+        setTimeout(scrollToTarget, 260);
+        setTimeout(scrollToTarget, 620);
       });
     }
 
     function startLoadingProgress(labelEl) {
-      labelEl.innerHTML = '正在讀取祕密脈絡 <span class="loading-dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>';
+      labelEl.innerHTML = '正在读取秘密脉络 <span class="loading-dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>';
       return {
         finish() {
-          labelEl.textContent = '解讀完成';
+          labelEl.textContent = '解读完成';
         },
         stop() {}
       };

@@ -18,14 +18,16 @@ export async function onRequestPost(context) {
     const card = payload?.card || {};
 
     const userPrompt =
-      `請用繁體中文，針對以下單張塔羅牌做深度解讀，` +
-      `並分成「情感、工作、金錢、運勢」四個段落，最後給一句具體行動建議。\n\n` +
+      `请用简体中文，针对以下单张塔罗牌做深度解读，` +
+      `并分成「情感、工作、金钱、运势」四个段落，最后给一句具体行动建议。\n\n` +
       `今日牌：${card.name || ''}（${card.englishName || ''}）${card.direction || ''}\n` +
-      `牌義：${card.meaning || ''}\n\n` +
+      `牌义：${card.meaning || ''}\n\n` +
       `要求：\n` +
-      `1) 要結合這張牌的正逆位語氣。\n` +
-      `2) 語氣自然、像對話，不空泛。\n` +
-      `3) 不要輸出 Markdown 標題符號，直接純文字段落。`;
+      `1) 要结合这张牌的正逆位语气。\n` +
+      `2) 语气自然、像对话，不空泛。\n` +
+      `3) 不要输出 Markdown 标题符号，直接纯文字段落。\n` +
+      `4) 必须使用简体中文，不要使用繁体字。\n` +
+      `5) 第一行直接进入解牌，不要任何问候语或寒暄，例如“你好”“欢迎”“让我们来看看”。`;
 
     let lastError = '';
     let text = '';
@@ -37,7 +39,7 @@ export async function onRequestPost(context) {
         },
         body: JSON.stringify({
           systemInstruction: {
-            parts: [{ text: '你是專業塔羅諮詢師。輸出使用繁體中文，內容具體可行，避免神祕化空話。' }]
+            parts: [{ text: '你是专业塔罗咨询师。输出必须使用简体中文，内容具体可行，避免神秘化空话。禁止任何开场问候或寒暄，第一句必须直接解牌。' }]
           },
           contents: [
             {
@@ -63,7 +65,7 @@ export async function onRequestPost(context) {
       return json({ error: `Gemini request failed: ${lastError}` }, 502);
     }
 
-    return json({ text });
+    return json({ text: toSimplifiedText(text) });
   } catch (error) {
     return json({ error: error instanceof Error ? error.message : 'Unknown error' }, 500);
   }
@@ -96,4 +98,16 @@ function stripModelPrefix(name) {
 
 function dedupe(list) {
   return [...new Set(list.filter(Boolean))];
+}
+
+function toSimplifiedText(text) {
+  if (!text) return '';
+  const map = {
+    '體': '体', '臺': '台', '萬': '万', '與': '与', '為': '为', '這': '这', '個': '个',
+    '來': '来', '時': '时', '會': '会', '裡': '里', '後': '后', '們': '们', '說': '说',
+    '聽': '听', '讀': '读', '關': '关', '選': '选', '擇': '择', '點': '点', '擊': '击',
+    '頁': '页', '運': '运', '勢': '势', '過': '过', '現': '现', '祕': '秘', '聖': '圣',
+    '寶': '宝', '權': '权', '幣': '币', '資': '资', '訊': '讯', '開': '开', '門': '门'
+  };
+  return Array.from(text).map((ch) => map[ch] || ch).join('');
 }
